@@ -15,6 +15,12 @@ wheel = "^0.40.0"
 setuptools = "^67.7.1"
 pip = "^23.1"
 dehb = "^0.0.5"
+ipykernel = "^6.22.0"
+ipywidgets = "^8.0.6"
+iprogress = "^0.4"
+pyarrow = "^11.0.0"
+pandas = "^2.0.0"
+plotly = "^5.14.1"
 
 [build-system]
 requires = ["poetry-core"]

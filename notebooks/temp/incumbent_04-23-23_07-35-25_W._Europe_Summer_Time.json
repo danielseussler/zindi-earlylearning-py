@@ -1,1 +1,0 @@
-{"config": {"bagging_fraction": 0.9821312205606494, "cat_l2": 6.2570292223510435, "cat_smooth": 8.332917388271055, "feature_fraction": 0.6686675881578197, "num_leaves": 24}, "score": 9.73699224395508, "info": {"test_score": 9.761928010176467, "budget": 185.18518518518516, "best_iteration": 83}}

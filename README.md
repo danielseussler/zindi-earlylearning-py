@@ -3,7 +3,7 @@
 
 ## Introduction
 
-This repository contains the replication files for the Zindi Competition DataDrive 2030 Early Learning Predictors. For this task, I tune and fit a LightGBM model. Explainability of model predictions is given through Shap values. Note: the Shap values provided should *not* be interpreted causally as this requires a causal framework. This is a purely predictive modelling approach (and competition) and the models should therefore be understood as such. 
+This repository contains the replication files for the Zindi Competition DataDrive 2030 Early Learning Predictors. For this task, I tune and fit a LightGBM [6] model. Explainability of model predictions is given through Shap values. Note: the Shap values provided should *not* be interpreted causally as this requires a causal framework. This is a purely predictive modelling approach (and competition) and the models should therefore be understood as such. 
 
 Alternatively, an exploratory modelling approach such as in [2, 5] with variable selection controls [8, 9] would be interesting to explore further. 
 
@@ -13,6 +13,8 @@ For the competition see here: [https://zindi.africa/competitions/datadrive2030-e
 ## Repository and Reproducibility
 
 The main notebook of interest is `/notebooks/analysis.ipynb` where the main model is fitted and the Shap values are computed. The hyperparameters used there were found using Bayesian Optimization [4, 10] in `/notebooks/tuning-bo.ipynb`. Some simple data cleaning and recoding were done in `/notebooks/data-prep.ipynb`. Tuning and data preparation are included for reference and are not necessary to run again to replicate the analysis. All notebooks were run on a 2019 i5 laptop. Tuning is the most computationally heavy part, which is timed for 45 min. `/submission/` contains the submitted files. The repository includes all necessary data. A `requirements.txt` is included to reproduce the environment that was used to run the included notebooks. All analyses were done in Python `v3.10.11`. 
+
+The `/notebooks-test/` folder contains some test notebooks on feature selection and advanced hyperparameter tuning algorithms [1, 3]. 
 
 
 ## References 

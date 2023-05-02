@@ -3,18 +3,59 @@
 
 ## Introduction
 
-This repository contains the replication files for the Zindi Competition DataDrive 2030 Early Learning Predictors. For this task, I tune and fit a LightGBM [6] model. Explainability of model predictions is given through Shap values. Note: the Shap values provided should *not* be interpreted causally as this requires a causal framework. This is a purely predictive modelling approach (and competition) and the models should therefore be understood as such. 
+This repository contains the replication files for the Zindi Competition DataDrive 2030 Early Learning Predictors. For this task, I tune and fit a LightGBM [6] model. The local explainability of model predictions is given through Shap values [12]. Global model sensitivity to changes in features is provided via feature shuffling. Note: the Shap and sensitivity metrics provided should *not* be interpreted causally as this requires a causal framework. This is a purely predictive modelling approach (and competition) and the models should therefore be understood as such. 
 
-Alternatively, an exploratory modelling approach such as in [2, 5] with variable selection controls [8, 9] would be interesting to explore further. 
+Alternatively, an exploratory modelling approach such as in [2, 5] with variable selection controls [8, 9] would be interesting to explore further. Also, counterfactual explainability as in [11].
 
 For the competition see here: [https://zindi.africa/competitions/datadrive2030-early-learning-predictors-challenge](https://zindi.africa/competitions/datadrive2030-early-learning-predictors-challenge).
 
 
-## Repository and Reproducibility
+## Repository & Workflow 
 
-The main notebook of interest is `/notebooks/analysis.ipynb` where the main model is fitted and the Shap values are computed. The hyperparameters used there were found using Bayesian Optimization [4, 10] in `/notebooks/tuning-bo.ipynb`. Some simple data cleaning and recoding were done in `/notebooks/data-prep.ipynb`. Tuning and data preparation are included for reference and are not necessary to run again to replicate the analysis. All notebooks were run on a 2019 i5 laptop. Tuning is the most computationally heavy part, which is timed for 45 min. `/submission/` contains the submitted files. The repository includes all necessary data. A `requirements.txt` is included to reproduce the environment that was used to run the included notebooks. All analyses were done in Python `v3.10.11`. 
+### /data/
 
-The `/notebooks-test/` folder contains some test notebooks on feature selection and advanced hyperparameter tuning algorithms [1, 3]. 
+All data are included in the repository. The original data from Zindi is in `/competition/` and `/clean/` contains the preprocessed version (see below). It is therefore not necessary to rerun the data preprocessing part.
+
+### /notebooks/
+
+The notebooks, in their respective order: 
+
+-- **data-prep.ipynb**: Some preliminary data cleaning and pre-preprocessing. I do not do extensive feature engineering, rather I fix some numerical/categorical mixups, multiple answers columns, drop features with too many missings, feature engineer the date columns, and for a few categorical variables add an ordinal encoding.  
+
+-- **tuning-bo.ipynb**: I tune the LightGBM model w.r.t. percentage of considered features per iteration and the two categorical hyper-parameters. The learning rate is fixed low and the number of iterations selected by early stopping with 5 patience rounds. Ideally, generalisation performance would be assessed by resampling techniques, here not considered due to the computational demands (and not expected improvements). This is run for 45min with Bayesian Optimisation using the Tree Parzen Estimator in Optuna. 
+
+-- **analysis.ipynb**: Given the tuned hyper-params, I rerun the model, select the number of iterations using 10-fold cv and refit the model on the complete training datasets. Shap values are computed and a submission file is generated.
+
+-- **sensitivity.ipynb**: Added sensitivity analysis with feature shuffling to assess model sensitivity to individual features. 
+
+Note, since the data and tuned parameters are provided, it is not necessary to rerun all notebooks. 
+
+
+### /notebooks-test/
+
+The folder contains some test runs on feature selection and advanced hyperparameter tuning algorithms [1, 3], but are not further relevant to the submitted results.
+
+
+### /submission/
+
+Contains the submitted results file. Note, if the scripts are rerun, the predictions will be saved in a csv file with the corresponding date and time stamp.
+
+
+## Reproducibility and computational requirements
+
+All notebooks were run on a 2019 i5 laptop. Tuning is the most computationally heavy part, which is timed for 45 min. In particular, a different machine may yield a higher or lower number of trials and thus a (slightly) different tuning result. Therefore the tuning and analysis spart is split. A `requirements.txt` is included to reproduce the environment that was used to run the included notebooks. All analyses were done in Python `v3.10.11`. 
+
+Tuning and data preparation are included for reference and are not necessary to run again to replicate the analysis. The `analysis.ipynb` fits the model and computes the predictions for the submission and should run in a few minutes, the sensitivity notebook in even less.
+
+
+## Some learnings (informally)
+
+- hyper-param tuning in noise environments (even with cross-validation) is not useful
+- categorical encodings can make & break analyses and it is far from consistent across packages (in particular python)
+- ideally one does feature selection beforehand, but this is difficult in this case given many categorical covariates and a high share of missings. feature sensitivity by shuffling might have been an option. 
+
+further concerns:
+- tree-based methods that allow for missing values might be biased towards covariates with less-missings (as missings are not counted towards the gain when splitting), so if some surveys are stitched together we might only learn from a few surveys effectively discarding the others. this might introduce a bias in the considered population.
 
 
 ## References 
@@ -38,3 +79,7 @@ The `/notebooks-test/` folder contains some test notebooks on feature selection 
 [9] R. D. Shah and R. J. Samworth, ‘Variable selection with error control: another look at stability selection: Another Look at Stability Selection’, Journal of the Royal Statistical Society: Series B (Statistical Methodology), vol. 75, no. 1, pp. 55–80, Jan. 2013, doi: 10.1111/j.1467-9868.2011.01034.x.
 
 [10] J. Bergstra, R. Bardenet, Y. Bengio, and B. Kégl, ‘Algorithms for hyper-parameter optimization’, in Advances in neural information processing systems, 2011. [Online]. Available: https://proceedings.neurips.cc/paper_files/paper/2011/file/86e8f7ab32cfd12577bc2619bc635690-Paper.pdf
+
+[11] R. K. Mothilal, A. Sharma, and C. Tan, ‘Explaining machine learning classifiers through diverse counterfactual explanations’, in Proceedings of the 2020 Conference on Fairness, Accountability, and Transparency, Barcelona Spain: ACM, Jan. 2020, pp. 607–617. doi: 10.1145/3351095.3372850.
+
+[12] S. M. Lundberg and S.-I. Lee, ‘A unified approach to interpreting model predictions’, in Proceedings of the 31st international conference on neural information processing systems, in NIPS’17. Red Hook, NY, USA, 2017, pp. 4768–4777.

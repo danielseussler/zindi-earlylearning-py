@@ -5,7 +5,7 @@
 
 This repository contains the replication files for the Zindi Competition DataDrive 2030 Early Learning Predictors. For this task, I tune and fit a LightGBM [6] model. The local explainability of model predictions is given through Shap values [12]. Global model sensitivity to changes in features is provided via feature shuffling. Note: the Shap and sensitivity metrics provided should *not* be interpreted causally as this requires a causal framework. This is a purely predictive modelling approach (and competition) and the models should therefore be understood as such. 
 
-Alternatively, an exploratory modelling approach such as in [2, 5] with variable selection controls [8, 9] would be interesting to explore further. Also, counterfactual explainability as in [11].
+Alternatively, an exploratory modelling approach such as in [2, 5] with variable selection controls [8, 9] would be interesting to explore. Also, counterfactual explainability as in [11].
 
 For the competition see here: [https://zindi.africa/competitions/datadrive2030-early-learning-predictors-challenge](https://zindi.africa/competitions/datadrive2030-early-learning-predictors-challenge).
 
@@ -14,7 +14,8 @@ For the competition see here: [https://zindi.africa/competitions/datadrive2030-e
 
 ### /data/
 
-All data are included in the repository. The original data from Zindi is in `/competition/` and `/clean/` contains the preprocessed version (see below). It is therefore not necessary to rerun the data preprocessing part.
+All data are included in the repository. The original data from Zindi is in `/competition/` and `/clean/` contains the preprocessed version (see below). 
+
 
 ### /notebooks/
 
@@ -26,26 +27,19 @@ The notebooks, in their respective order:
 
 -- **analysis.ipynb**: Given the tuned hyper-params, I rerun the model, select the number of iterations using 10-fold cv and refit the model on the complete training datasets. Shap values are computed and a submission file is generated.
 
--- **sensitivity.ipynb**: Added sensitivity analysis with feature shuffling to assess model sensitivity to individual features. 
+-- **sensitivity.ipynb**: Added sensitivity analysis with feature shuffling to assess model sensitivity to individual features. This is not in the scope of the sensitivity analysis requested in the competition. First, the mean absolute errors in this competition are very high, indicating a very low signal-to-noise ratio. Second, one might be able to compute changes in the prediction conditional on changes in the input, for example using partial independence plots. Though, this does not mean this is useful, much less actionable information. As noted above, this is a predictive framework, not a causal one. 
 
 Note, since the data and tuned parameters are provided, it is not necessary to rerun all notebooks. 
 
 
 ### /notebooks-test/
 
-The folder contains some test runs on feature selection and advanced hyperparameter tuning algorithms [1, 3], but are not further relevant to the submitted results.
+The folder contains some test runs on feature selection and advanced hyperparameter tuning algorithms [1, 3], but are not relevant to the submitted results.
 
 
 ### /submission/
 
 Contains the submitted results file. Note, if the scripts are rerun, the predictions will be saved in a csv file with the corresponding date and time stamp.
-
-
-## Reproducibility and computational requirements
-
-All notebooks were run on a 2019 i5 laptop. Tuning is the most computationally heavy part, which is timed for 45 min. In particular, a different machine may yield a higher or lower number of trials and thus a (slightly) different tuning result. Therefore the tuning and analysis spart is split. A `requirements.txt` is included to reproduce the environment that was used to run the included notebooks. All analyses were done in Python `v3.10.11`. 
-
-Tuning and data preparation are included for reference and are not necessary to run again to replicate the analysis. The `analysis.ipynb` fits the model and computes the predictions for the submission and should run in a few minutes, the sensitivity notebook in even less.
 
 
 ## Some learnings (informally)
@@ -54,8 +48,15 @@ Tuning and data preparation are included for reference and are not necessary to 
 - categorical encodings can make & break analyses and it is far from consistent across packages (in particular python)
 - ideally one does feature selection beforehand, but this is difficult in this case given many categorical covariates and a high share of missings. feature sensitivity by shuffling might have been an option. 
 
-further concerns:
-- tree-based methods that allow for missing values might be biased towards covariates with less-missings (as missings are not counted towards the gain when splitting), so if some surveys are stitched together we might only learn from a few surveys effectively discarding the others. this might introduce a bias in the considered population.
+Other concerns:
+- tree-based methods that allow for missing values might be biased towards covariates with less missings (as missings are not counted towards the gain when splitting), so if some surveys are stitched together we might only learn from a few surveys effectively discarding the others. this might introduce bias in the considered population.
+
+
+## Reproducibility and computational requirements
+
+All notebooks were run on a 2019 i5 laptop. Tuning is the most computationally heavy part, which is timed for 45 min. In particular, a different machine may yield a higher or lower number of trials and thus a (slightly) different tuning result. Therefore the tuning and analysis spart is split. A `requirements.txt` is included to reproduce the environment that was used to run the included notebooks. All analyses were done in Python `v3.10.11`. 
+
+Tuning and data preparation are included for reference and are not necessary to run again to replicate the analysis. The `analysis.ipynb` fits the model and computes the predictions for the submission and should run in a few minutes, the sensitivity notebook in even less.
 
 
 ## References 
